@@ -1,10 +1,14 @@
 package main
 
-import "log"
+import (
+	"log"
+
+	"github.com/AndreasNugoho/go-social/internal/env"
+)
 
 func main() {
 	cfg := config{
-		addr: ":9090",
+		addr: env.GetString("ADDR", ":9090"),
 	}
 
 	app := &application{
