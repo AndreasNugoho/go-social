@@ -8,6 +8,8 @@ import (
 	"github.com/AndreasNugoho/go-social/internal/store"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+
+	_ "github.com/lib/pq"
 )
 
 type application struct {
@@ -18,6 +20,7 @@ type application struct {
 
 type config struct {
 	addr string
+	db   dbConfig
 }
 
 type dbConfig struct {
@@ -54,7 +57,7 @@ func (app *application) run(mux http.Handler) error {
 		IdleTimeout:  time.Minute,
 	}
 
-	log.Printf("Starting server on %s", app.config.addr)
+	log.Printf("🚀 Starting server on %s", app.config.addr)
 
 	return srv.ListenAndServe()
 }
