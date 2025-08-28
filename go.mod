@@ -6,6 +6,7 @@ require (
 	github.com/go-chi/chi/v5 v5.2.2
 	github.com/go-playground/validator/v10 v10.27.0
 	github.com/lib/pq v1.10.9
+	golang.org/x/exp v0.0.0-20250819193227-8b4c13bb791b
 )
 
 require (
