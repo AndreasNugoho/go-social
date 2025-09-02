@@ -18,10 +18,79 @@ type Post struct {
 	UpdatedAt string    `json:"updated_at"`
 	Version   int       `json:"version"`
 	Commnents []Comment `json:"comments"`
+	User      User      `json:"user"`
+}
+
+type PostWithMetadata struct {
+	Post
+	CommentCount int `json:"comment_count"`
 }
 
 type PostStore struct {
 	db *sql.DB
+}
+
+func (s *PostStore) GetUserFeed(ctx context.Context, userID int64) ([]PostWithMetadata, error) {
+	query := `
+		SELECT
+			p.id,
+			p.user_id,
+			p.title,
+			p.content,
+			p.created_at,
+			p.version,
+			p.tags,
+			u.username,
+			COUNT(c.id) AS comment_count
+		FROM posts p
+		LEFT JOIN comments c   ON c.post_id = p.id
+		LEFT JOIN users    u   ON p.user_id = u.id
+		JOIN followers    f   ON f.follower_id = p.user_id
+		WHERE (f.user_id = $1 OR p.user_id = $1)
+		GROUP BY
+			p.id,
+			p.user_id,
+			p.title,
+			p.content,
+			p.created_at,
+			p.version,
+			p.tags,
+			u.username
+		ORDER BY p.created_at DESC;
+	`
+
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
+
+	rows, err := s.db.QueryContext(ctx, query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var feed []PostWithMetadata
+	for rows.Next() {
+		var post PostWithMetadata
+		if err := rows.Scan(
+			&post.ID,
+			&post.UserID,
+			&post.Title,
+			&post.CreatedAt,
+			&post.Version,
+			pq.Array(&post.Tags),
+			&post.User.Username,
+			&post.CommentCount,
+		); err != nil {
+			return nil, err
+		}
+		feed = append(feed, post)
+	}
+
+	// if err := rows.Err(); err != nil {
+	// 	return nil, err
+	// }
+
+	return feed, nil
 }
 
 func (s *PostStore) Create(ctx context.Context, post *Post) error {
