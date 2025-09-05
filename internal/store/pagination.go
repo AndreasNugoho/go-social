@@ -1,4 +1,4 @@
-package main
+package store
 
 import (
 	"net/http"
@@ -11,25 +11,25 @@ type PaginatedFeedQuery struct {
 	Sort   string `json:"sort" validate:"oneof=asc desc"`
 }
 
-func (fq *PaginatedFeedQuery) Parse(r *http.Request) (PaginatedFeedQuery, error) {
+func (fq PaginatedFeedQuery) Parse(r *http.Request) (PaginatedFeedQuery, error) {
 	qs := r.URL.Query()
 
 	limit := qs.Get("limit")
 	if limit != "" {
 		l, err := strconv.Atoi(limit)
 		if err != nil {
-			return req, nil
+			return fq, nil
 		}
-		fq.limit = l
+		fq.Limit = l
 	}
 
 	offset := qs.Get("offset")
 	if offset != "" {
 		l, err := strconv.Atoi(offset)
 		if err != nil {
-			return req, nil
+			return fq, nil
 		}
-		fq.offset = l
+		fq.Offset = l
 	}
 
 	sort := qs.Get("sort")
