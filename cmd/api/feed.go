@@ -28,7 +28,7 @@ func (app *application) getUserFeedHandler(w http.ResponseWriter, r *http.Reques
 
 	ctx := r.Context()
 	log.Printf("Fetching feed with limit=%d, offset=%d, sort=%s", fq.Limit, fq.Offset, fq.Sort)
-	feed, err := app.store.Posts.GetUserFeed(ctx, int64(20), fq)
+	feed, err := app.store.Posts.GetUserFeed(ctx, int64(2), fq)
 	log.Printf("Fetched %d posts", len(feed))
 	if err != nil {
 		app.internalServerError(w, r, err)
