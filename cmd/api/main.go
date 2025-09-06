@@ -21,12 +21,13 @@ const version = "1.0.0"
 //	@license.name	Apache 2.0
 //	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
-//	@BasePath	/v1
+//	@BasePath					localhost:9090/v1
+//
+//	@securityDefinitions.apikey	BearerAuth
+//	@in							header
+//	@name						Authorization
+//	@description
 
-// @securityDefinitions.apikey	BearerAuth
-// @in							header
-// @name						Authorization
-// @description
 func main() {
 	cfg := config{
 		addr: env.GetString("ADDR", ":9090"),
