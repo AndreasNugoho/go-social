@@ -1,7 +1,7 @@
 include .envrc
 MIGRATION_PATH = ./cmd/migrate/migrations
 
-.PHONY: migration migrate-up migrate-down seed
+.PHONY: migration migrate-up migrate-down seed gen-docs
 
 migration:
 	@migrate create -seq -ext sql -dir $(MIGRATION_PATH) $(filter-out $@,$(MAKECMDGOALS))
@@ -14,3 +14,6 @@ migrate-down:
 
 seed:
 	@go run cmd/migrate/seed/main.go
+
+gen-docs:
+	@swag init -g ./api/api.go -d cmd,internal && swag fmt
